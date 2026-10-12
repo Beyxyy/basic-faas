@@ -1,12 +1,12 @@
 use bollard::{Docker, plugin::ContainerSummary, query_parameters::ListContainersOptions};
-use std::{collections::HashMap, string};
+use std::{collections::HashMap};
 
 
-pub struct ContainerService {
+pub struct ContainerViewerService {
     docker : Docker
 }
 
-impl ContainerService {
+impl ContainerViewerService {
 
     pub fn new(docker : Docker) -> Self {
         Self { docker }

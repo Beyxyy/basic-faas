@@ -4,7 +4,7 @@ use bollard::Docker;
 mod routes;
 mod model;
 mod services;
-use services::ContainerService;
+use services::{ContainerCreatorService, ContainerViewerService};
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
@@ -14,13 +14,18 @@ async fn main() -> std::io::Result<()> {
     let docker = Arc::new(docker);
     
     // Crée le service une seule fois
-    let container_service = web::Data::new(
-        ContainerService::new((*docker).clone())
+    let container_viewer_service = web::Data::new(
+        ContainerViewerService::new((*docker).clone())
+    );
+
+    let container_creator_service = web::Data::new(
+        ContainerCreatorService::new((*docker).clone())
     );
     
     HttpServer::new(move|| {
         App::new()
-            .app_data(container_service.clone())
+            .app_data(container_viewer_service.clone())
+            .app_data(container_creator_service.clone())
             .service(routes::healthcheck)
             .service(routes::home)
             .service(routes::list_running_containers)

@@ -1,9 +1,9 @@
-use actix_web::{HttpRequest, HttpResponse, Responder, get, web};
-use crate::{model, services::{ContainerService}};
+use actix_web::{HttpResponse, Responder, get, web};
+use crate::{services::{ContainerViewerService}};
 use serde_derive::Deserialize;
 
 #[get("/healthcheck")]
-async fn healthcheck(container_service: web::Data<ContainerService>) -> impl Responder {
+async fn healthcheck(container_service: web::Data<ContainerViewerService>) -> impl Responder {
     match container_service.is_docker_running().await {
         true => HttpResponse::Ok().body("OK"),
         false => HttpResponse::ServiceUnavailable().body("Docker not running"),
@@ -22,7 +22,7 @@ struct StatusParam {
 }
 
 #[get("/containers")]
-async fn list_running_containers(container_service: web::Data<ContainerService>, status: web::Query<StatusParam>) -> impl Responder {
+async fn list_running_containers(container_service: web::Data<ContainerViewerService>, status: web::Query<StatusParam>) -> impl Responder {
     let result = if let Some(status) = &status.status {
         container_service.list_containers_by_status(status.clone()).await
     } else {
